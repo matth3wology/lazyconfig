@@ -5,7 +5,7 @@ return {
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
-    'neovim/nvim-lspconfig', -- must include this
+    'neovim/nvim-lspconfig', -- still needed for configs
     'hrsh7th/nvim-cmp',
     'hrsh7th/cmp-nvim-lsp',
     'L3MON4D3/LuaSnip',
@@ -19,8 +19,6 @@ return {
     local mason_tool = require('mason-tool-installer')
     local luasnip = require('luasnip')
     local cmp = require('cmp')
-    local cmp_lsp = require('cmp_nvim_lsp')
-    local util = require('lspconfig.util')
 
     -- Load snippets
     require("luasnip.loaders.from_vscode").lazy_load()
@@ -82,5 +80,17 @@ return {
     vim.api.nvim_create_autocmd({ "BufWritePost" }, {
       callback = function() require('lint').try_lint() end
     })
+
+    -- LuaLS setup (new API)
+    vim.lsp.config.lua_ls = {
+      settings = {
+        Lua = {
+          runtime = { version = 'LuaJIT' },
+          diagnostics = { globals = { 'vim', 'require' } },
+          workspace = { library = vim.api.nvim_get_runtime_file("", true) },
+          telemetry = { enable = false },
+        },
+      },
+    }
   end
 }
